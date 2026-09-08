@@ -1,0 +1,1 @@
+export function Brand({light=false}:{light?:boolean}){return <a className={'brand '+(light?'brand-light':'')} href="/" aria-label="Anatomed, página inicial"><span className="brand-symbol">a</span><span>anatomed<span className="brand-period">.</span></span></a>;}

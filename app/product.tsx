@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { ArrowLeft, ArrowUpRight, NotebookPen, Search, Layers3, Pause, Play } from "lucide-react";
 import { Brand } from "./brand";
-import { api, defaults, type Session } from "./api";
+import { api, authConfigured, defaults, type Session } from "./api";
 import { WorkspaceShell, StudyHome, Summaries, Research } from "./workspace";
 import Notebook from "./notebook";
 import { AtlasBoundary } from "./atlas-boundary";
@@ -34,7 +34,7 @@ export default function Product() {
         ? mayneDemoUser
         : demoUser
         : null,
-    authConfigured: false,
+    authConfigured,
     ownerLogin: false,
     settings: defaults,
   };
@@ -185,9 +185,9 @@ export default function Product() {
     path === "/estudar" ? (
       <StudyHome />
     ) : path === "/resumos" ? (
-      <Summaries />
+      <Summaries demo={!session.authConfigured} />
     ) : path === "/caderno" ? (
-      <Notebook demo={session.user?.id === "anatomed-demo"} />
+      <Notebook demo={session.user?.id.endsWith("-demo") || !session.authConfigured} />
     ) : path === "/biblioteca" ? (
       <Research />
     ) : (

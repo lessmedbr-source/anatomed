@@ -96,7 +96,9 @@ async function remoteApi(path: string, options: RequestInit) {
   const body = options.body ? JSON.parse(String(options.body)) as Record<string, any> : {};
   if (path === "/session") return remoteSession();
   if (path === "/auth/login" && options.method === "POST") {
-    const login = await authRequest("/token?grant_type=password", { method: "POST", body: JSON.stringify({ email: body.email, password: body.password }) }) as AuthSession;
+    const rawEmail = String(body.email || "").trim().toLowerCase();
+    const email = rawEmail === "mayne" ? "mayne@anatomed.com" : rawEmail === "demo" || rawEmail === "juan" ? "demo@anatomed.com" : rawEmail;
+    const login = await authRequest("/token?grant_type=password", { method: "POST", body: JSON.stringify({ email, password: body.password }) }) as AuthSession;
     saveSession(login);
     const user = await ensureProfile(login.user, login.access_token);
     return { user, authConfigured: true, ownerLogin: user.role === "owner", settings: defaults };

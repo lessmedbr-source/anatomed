@@ -68,6 +68,7 @@ export function WorkspaceShell({
           className="sidebar-link"
           onClick={async () => {
             sessionStorage.removeItem("anatomed_demo_access");
+            sessionStorage.removeItem("anatomed_demo_account");
             try {
               await api("/auth/logout", { method: "POST" });
             } catch {
@@ -230,3 +231,4 @@ export function Research() {
     </div>
   );
 }
+

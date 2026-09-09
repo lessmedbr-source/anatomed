@@ -18,12 +18,21 @@ const demoUser: Session["user"] = {
   role: "student",
   access: "active",
 };
+const mayneDemoUser: Session["user"] = {
+  id: "anatomed-mayne-demo",
+  name: "Mayne — influencer",
+  email: "mayne@anatomed.com",
+  role: "teacher",
+  access: "active",
+};
 export default function Product() {
   const fallback: Session = {
     user:
       typeof sessionStorage !== "undefined" &&
       sessionStorage.getItem("anatomed_demo_access") === "1"
-        ? demoUser
+      ? sessionStorage.getItem("anatomed_demo_account") === "mayne"
+        ? mayneDemoUser
+        : demoUser
         : null,
     authConfigured: false,
     ownerLogin: false,
@@ -302,3 +311,4 @@ function Confirm() {
     </div>
   );
 }
+

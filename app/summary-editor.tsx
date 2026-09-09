@@ -5,10 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Brand } from './brand';
 import { lessons, textbook } from './study-content';
-import { readTabs, readStudy, writeStudy, type SummaryTab } from './study-store';
-export default function SummaryEditor() {
+import { readTabs, readStudy, writeStudy, defaultTabs, type SummaryTab } from './study-store';
+import { api } from './api';
+export default function SummaryEditor({ demo = false }: { demo?: boolean }) {
   const [tabs, setTabs] = useState<SummaryTab[]>([]), [selected, setSelected] = useState(''), [name, setName] = useState(''), [message, setMessage] = useState(''), [busy, setBusy] = useState(false), [dirty, setDirty] = useState(false);
-  useEffect(() => { readTabs().then(async items => {
+  useEffect(() => { (demo ? readTabs() : api<SummaryTab[]>('/summaries').then(items => items.length ? items : defaultTabs())).then(async items => {
     const id = new URLSearchParams(location.search).get('sistema') || await readStudy('selected-summary', items[0]?.id);
     setTabs(items); setSelected(items.some(t => t.id === id) ? id : items[0]?.id);
   }).catch(e => setMessage(e.message)); }, []);
@@ -18,7 +19,7 @@ export default function SummaryEditor() {
   }, [dirty]);
   async function persist(next: SummaryTab[]) {
     setBusy(true); setMessage('');
-    try { await writeStudy('summaries', next); setTabs(next); setDirty(false); setMessage('Resumos salvos neste navegador.'); return true; }
+    try { if (demo) await writeStudy('summaries', next); else await api('/summaries', { method: 'PUT', body: JSON.stringify({ summaries: next }) }); setTabs(next); setDirty(false); setMessage(demo ? 'Resumos salvos neste navegador.' : 'Resumos salvos na sua conta.'); return true; }
     catch (e) { setMessage((e as Error).message); return false; }
     finally { setBusy(false); }
   }
@@ -56,3 +57,4 @@ export default function SummaryEditor() {
     </div><p role="status">{message || (dirty ? 'Alterações não salvas.' : '')}</p>
   </div>;
 }
+
